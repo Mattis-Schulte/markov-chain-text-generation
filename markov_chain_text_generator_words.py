@@ -1,8 +1,14 @@
+"""
+Simple demo of a text generator using a Markov model with words as tokens.
+GitHub: https://github.com/Mattis-Schulte/markov-chain-text-generation
+"""
+
 import numpy as np
 import pickle
 import re
 from collections import defaultdict, Counter, deque
 from time import time
+
 
 class MarkovChainGenerator:
     def __init__(self, n=2):
@@ -33,7 +39,7 @@ class MarkovChainGenerator:
             self.probabilities[ngram] = {next_token: count / total_count for next_token, count in counter.items()}
 
     def tokenize(self, data):
-        # Split the data into tokens and remove unwanted characters using regular expressions
+        # Tokenize the data into words and remove punctuation
         data = re.sub(r'[^\w\s]', '', data)
         data = re.sub(r'\s+', ' ', data.strip())
 
@@ -97,6 +103,7 @@ class MarkovChainGenerator:
 
         return ' '.join(generated_text)
 
+
 if __name__ == '__main__':
     generator = MarkovChainGenerator(n=3)
     generator.train_from_file('training_data_input.txt', 'training_data_output.pkl')
@@ -107,4 +114,4 @@ if __name__ == '__main__':
             t_num = input('\nNumber of tokens to generate: ')
             generator.generate_text(int(t_num))
         except ValueError:
-            pass
+            print('Invalid input. Please enter a valid integer.')

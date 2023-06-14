@@ -1,7 +1,13 @@
+"""
+Simple demo of a text generator using a Markov model with single characters as tokens.
+GitHub: https://github.com/Mattis-Schulte/markov-chain-text-generation
+"""
+
 import numpy as np
 import pickle
 from collections import defaultdict, Counter, deque
 from time import time
+
 
 class MarkovChainGenerator:
     def __init__(self, n=5):
@@ -32,7 +38,7 @@ class MarkovChainGenerator:
             self.probabilities[ngram] = {next_token: count / total_count for next_token, count in counter.items()}
 
     def tokenize(self, data):
-        # Tokenize the data by iterating over it
+        # Tokenize the data into characters
         return iter(data)
 
     def train_from_file(self, input_filename, output_filename):
@@ -44,14 +50,14 @@ class MarkovChainGenerator:
         print(f'Training from {input_filename}...')
         start_time = time()
         self.calculate_markov_chain(data)
-        print(f'Training completed in {time() - start_time} seconds.')
+        print(f'Training completed in {time() - start_time:.2f} seconds.')
 
         # Write the probabilities to an output file
         print(f'Writing output to {output_filename}...')
         start_time = time()
         with open(output_filename, 'wb') as file:
             pickle.dump(self.probabilities, file)
-        print(f'Output written to {output_filename} in {time() - start_time} seconds.')
+        print(f'Output written to {output_filename} in {time() - start_time:.2f} seconds.')
 
     def read_probabilities(self, filename):
         # Read the probabilities from a file
@@ -59,9 +65,9 @@ class MarkovChainGenerator:
         start_time = time()
         with open(filename, 'rb') as file:
             self.probabilities = pickle.load(file)
-        print(f'Probabilities read from {filename} in {time() - start_time} seconds.')
+        print(f'Probabilities read from {filename} in {time() - start_time:.2f} seconds.')
 
-    def generate_text(self, length, chunk_size=1):
+    def generate_text(self, length):
         # Generate text using the trained Markov chain model
         print('Starting text generation...')
         if self.probabilities is None:
@@ -96,12 +102,12 @@ class MarkovChainGenerator:
 
 if __name__ == '__main__':
     generator = MarkovChainGenerator(n=8)
-    generator.train_from_file('training_data_input.txt', 'training_data_output.pkl')
-    # generator.read_probabilities('training_data_output.pkl')
+    generator.train_from_file('tiny_shakespeare.txt', 'tiny_shakespeare.pkl')
+    # generator.read_probabilities('tiny_shakespeare.pkl')
 
     while True:
         try:
             t_num = input('\nNumber of tokens to generate: ')
             generator.generate_text(int(t_num))
         except ValueError:
-            pass
+            print('Invalid input. Please enter a valid integer.')
